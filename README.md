@@ -78,6 +78,6 @@ This will be mostly painless, I promise.
 ### 2) Authorize
 
 - Select `Install to Workspace` at the top of the app page (or `Reinstall to Workspace` if you have done this previously).
-- You will be prompted to an authorization page, review the permissions (should match what you have configured in the yaml manifest.
+- You will be prompted to an authorization page, review the permissions (they should match what you have configured in the yaml manifest).
 - Then, from the `Features` menu on the left of the app page, select `OAuth & Permissions`: there you will find your **User OAuth Token**, which will generally be in `xoxp-********...` format. This is the token you need to past into the slack-archive prompt, in order for the program to work.
 
