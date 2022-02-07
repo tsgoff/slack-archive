@@ -1,3 +1,5 @@
+<img width="128" alt="slack-archive-logo" src="./logo/icon.svg">
+
 # Export your Slack workspace as static HTML
 
 Alright, so you want to export all your messages on Slack. You want them in a format that you
