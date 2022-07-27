@@ -42,37 +42,41 @@ This will be mostly painless, I promise.
 - Choose the workspace you'd like to backup with slack-archive.
 - When prompted for an App Manifest, just paste in the following yaml configuration:
 
-  ```yaml
-  display_information:
-  name: Slack-Archive_<username>
-  description: Export user-visible channel data as static HTML. Incrementally.
+```yaml
+_metadata:
+  major_version: 1
+  minor_version: 1
+display_information:
+  name: "Slack-Archive_<username>"
+  description: "Export user-visible channel data as static HTML. Incrementally."
   background_color: "#de0446"
-  features:
+features:
   bot_user:
     display_name: Slack-Archive
     always_online: false
-  oauth_config:
-    scopes:
-      user:
-        - channels:read
-        - channels:history
-        - files:read
-        - groups:read
-        - groups:history
-        - mpim:read
-        - mpim:history
-        - im:read
-        - im:history
-        - users:read
-      bot:
-        - commands
-        - chat:write
-        - chat:write.public
-  settings:
-    org_deploy_enabled: false
-    socket_mode_enabled: false
-    token_rotation_enabled: false
-  ```
+oauth_config:
+  scopes:
+    user:
+      - channels:read
+      - channels:history
+      - files:read
+      - groups:read
+      - groups:history
+      - mpim:read
+      - mpim:history
+      - im:read
+      - im:history
+      - users:read
+    bot:
+      - commands
+      - chat:write
+      - chat:write.public
+settings:
+  org_deploy_enabled: false
+  socket_mode_enabled: false
+  token_rotation_enabled: false
+```
+
 - Replace `<username>` with whatever identifier you prefer (e.g. `your-surname`); please notice that this app-name will be visible to all the workspace members, in the `Apps` tab of the Slack UI.
 - Proceed and confirm the summary: your custom app is ready!
  
