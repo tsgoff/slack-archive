@@ -26,6 +26,16 @@ can still enjoy in 20 years. This tool will help you do that.
 3. Feed your [User OAuth Token](#getting-a-token) to the prompt and let the program interactively guide you through all the options.
 4. The exported data will be stored, in nice HTML format, inside the `./slack-archive` subdirectory. If the subdirectory already exist the program will compare the available workspace data with its content and download and merge only the newer additions.
 
+Alternatively, to run a development version in Docker:
+1. Checkout the code from Git
+2. Make sure Docker is installed
+3. Run `./run_in_docker.sh`
+
+This will build Docker image called `slack-archive:dev`, compile it and start the interactive guide.
+Results wil be saved in folder `slack-archive_USERDATA/`.
+
+### Parameters
+
 [^1]: NPX is an acronym for Node Package Execute. It comes with NPM, the Node Package Manager. 
 NPX has the ability to execute a Node package which wasn't previously installed, downloading it on the flight from the NPM registry.
 
