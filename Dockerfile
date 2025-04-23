@@ -12,4 +12,4 @@ COPY . /slack-archive/
 RUN npm run compile
 
 VOLUME /slack-archive/slack-archive
-ENTRYPOINT ["bin/slack-archive.js"]
+ENTRYPOINT ["node", "bin/slack-archive.js"]
