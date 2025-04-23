@@ -36,8 +36,18 @@ Results wil be saved in folder `slack-archive_USERDATA/`.
 
 ### Parameters
 
-[^1]: NPX is an acronym for Node Package Execute. It comes with NPM, the Node Package Manager. 
-NPX has the ability to execute a Node package which wasn't previously installed, downloading it on the flight from the NPM registry.
+```
+--automatic:                Don't prompt and automatically fetch all messages from all channels.
+--use-previous-channel-config: Fetch messages from channels selected in previous run instead of prompting.
+--channel-types             Comma-separated list of channel types to fetch messages from.
+                            (public_channel, private_channel, mpim, im)
+--exclude-channels          Comma-separated list of channels to exclude, in automatic mode
+--no-backup:                Don't create backups. Not recommended.
+--no-search:                Don't create a search file, saving disk space.
+--no-file-download:         Don't download files.
+--no-slack-connect:         Don't connect to Slack, just generate HTML from local data.
+--force-html-generation:    Force regeneration of HTML files. Useful after slack-archive upgrades.
+```
 
 ## Getting a token
 
@@ -93,7 +103,31 @@ settings:
 
 ### 2) Authorize
 
-- Select `Install to Workspace` at the top of the app page (or `Reinstall to Workspace` if you have done this previously).
-- You will be prompted to an authorization page, review the permissions (they should match what you have configured in the yaml manifest).
-- Then, from the `Features` menu on the left of the app page, select `OAuth & Permissions`: there you will find your **User OAuth Token**, which will generally be in `xoxp-********...` format. This is the token you need to past into the slack-archive prompt, in order for the program to work.
+Make sure you have your Slack workspace `URL` (aka team name) and your app's `client id`.
+Then, in a browser, open this URL - replacing `{your-team-name}` and `{your-client-id}`
+with your values.
 
+```
+https://{your-team-name}.slack.com/oauth/authorize?client_id={your-client-id}&scope=client
+```
+
+Confirm everything until Slack sends you to the mentioned non-existent URL. Look at your
+browser's address bar - it should contain an URL that looks like this:
+
+```
+https://notarealurl.com/?code={code}&state=
+```
+
+Copy everything between `?code=` and `&state`. This is your `code`. We'll need it in the
+next step.
+
+Next, we'll exchange your code for a token. To do so, we'll also need your `client secret` 
+from the first step when we created your app. In a browser, open this URL - replacing 
+`{your-team-name}`, `{your-client-id}`, `{your-code}` and `{your-client-secret}` with 
+your values.
+
+```
+https://{your-team-name}.slack.com/api/oauth.access?client_id={your-client-id}&client_secret={your-client-secret}&code={your-code}
+```
+
+Your browser should now be returning some JSON including a token. Make a note of it - that's what we'll use. Paste it in the command line, OR create a file called `.token` in the slack-archive directory (created when the command is first run) and paste it in there.

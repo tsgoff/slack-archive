@@ -4,20 +4,28 @@ import esMain from "es-main";
 import ora, { Ora } from "ora";
 import path from "path";
 
-import { File, User } from "./interfaces.js";
+import { File } from "./interfaces.js";
 import {
-  getAvatarFilePath,
   getChannelUploadFilePath,
   config,
+  NO_FILE_DOWNLOAD,
 } from "./config.js";
-import { getChannels, getMessages, getUsers } from "./data-load.js";
+import { getChannels, getMessages } from "./data-load.js";
+import { downloadAvatars } from "./users.js";
 
-async function downloadURL(
+export interface DownloadUrlOptions {
+  authorize?: boolean;
+  force?: boolean;
+}
+
+export async function downloadURL(
   url: string,
   filePath: string,
-  authorize: boolean = true
+  options: DownloadUrlOptions = {}
 ) {
-  if (fs.existsSync(filePath)) {
+  const authorize = options.authorize === undefined ? true : options.authorize;
+
+  if (!options.force && fs.existsSync(filePath)) {
     return;
   }
 
@@ -67,86 +75,59 @@ async function downloadFile(
   }
 }
 
-export async function downloadFilesForChannel(channelId: string) {
+export async function downloadFilesForChannel(channelId: string, spinner: Ora) {
+  if (NO_FILE_DOWNLOAD) {
+    return;
+  }
+
   const messages = await getMessages(channelId);
   const channels = await getChannels();
   const channel = channels.find(({ id }) => id === channelId);
-  const fileMessages = messages.filter((m) => (m.files?.length || 0) > 0);
-  const getSpinnerText = (i: number) =>
-    `Downloading ${i}/${fileMessages.length} files for channel ${
-      channel?.name || channelId
-    }...`;
+  const fileMessages = messages.filter(
+    (m) => (m.files?.length || m.replies?.length || 0) > 0
+  );
+  const getSpinnerText = (i: number, ri?: number) => {
+    let reply = "";
+    if (ri !== undefined) {
+      reply = ` (reply ${ri})`;
+    }
 
-  const spinner = ora(getSpinnerText(0)).start();
+    return `Downloading ${i}/${
+      fileMessages.length
+    }${reply} messages with files for channel ${channel?.name || channelId}...`;
+  };
+
+  spinner.text = getSpinnerText(0);
 
   for (const [i, fileMessage] of fileMessages.entries()) {
-    if (!fileMessage.files) {
+    if (!fileMessage.files && !fileMessage.replies) {
       continue;
     }
 
-    for (const file of fileMessage.files) {
-      spinner.text = getSpinnerText(i);
-      spinner.render();
-      await downloadFile(file, channelId, i, fileMessages.length, spinner);
+    if (fileMessage.files) {
+      for (const file of fileMessage.files) {
+        spinner.text = getSpinnerText(i);
+        spinner.render();
+        await downloadFile(file, channelId, i, fileMessages.length, spinner);
+      }
     }
-  }
 
-  spinner.succeed(
-    `Downloaded files for channel ${channel?.name || channelId}.`
-  );
-}
-
-export async function downloadAvatars() {
-  const users = await getUsers();
-  const userIds = Object.keys(users);
-
-  for (const userId of userIds) {
-    await downloadAvatarForUser(users[userId]);
-  }
-}
-
-export async function downloadAvatarForUser(user?: User | null) {
-  if (!user) {
-    return;
-  }
-
-  const { profile } = user;
-
-  if (!profile || !profile.image_512) {
-    return;
-  }
-
-  try {
-    const filePath = getAvatarFilePath(
-      user.id!,
-      path.extname(profile.image_512)
-    );
-    downloadURL(profile.image_512, filePath, false);
-  } catch (error) {
-    console.warn(`Failed to download avatar for user ${user.id!}`, error);
-  }
-}
-
-async function main() {
-  const lastArg = process.argv[process.argv.length - 1];
-
-  if (lastArg === "avatars") {
-    console.log(`Downloading avatars`);
-    await downloadAvatars();
-  }
-
-  if (lastArg === "channels") {
-    console.log(`Downloading files for channels`);
-    const channels = await getChannels();
-
-    for (const channel of channels) {
-      if (channel.id) {
-        downloadFilesForChannel(channel.id);
+    if (fileMessage.replies) {
+      for (const [ri, reply] of fileMessage.replies.entries()) {
+        if (reply.files) {
+          for (const file of reply.files) {
+            spinner.text = getSpinnerText(i, ri);
+            spinner.render();
+            await downloadFile(
+              file,
+              channelId,
+              i,
+              fileMessages.length,
+              spinner
+            );
+          }
+        }
       }
     }
   }
-}
-
-if (esMain(import.meta)) {
-  main();
 }

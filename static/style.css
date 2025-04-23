@@ -171,7 +171,6 @@ audio, video {
 
 .header a:active, .header a.current {
   color: #000;
-  font-weight: 800;
 }
 
 .header .created {
@@ -179,8 +178,7 @@ audio, video {
 }
 
 .jumper {
-  overflow: auto;
-  max-width: calc(100vw - 20px);
+  display: inline-block;
 }
 
 .jumper a {
@@ -198,6 +196,31 @@ audio, video {
   border-radius: 4px;
   border: 1px solid #80808045;
   outline: none;
+}
+
+.reaction {
+  background-color: #eaeaea;
+  display: inline-block;
+  border-radius: 10px;
+  font-size: .7em;
+  padding-left: 6px;
+  padding-right: 6px;
+  padding-bottom: 4px;
+  margin-right: 5px;
+  padding-top: 4px;
+}
+
+.reaction img {
+  height: 16px;
+  width: 16px;
+  margin-right: 3px;
+  vertical-align: middle;
+  display: inline-block;
+}
+
+.reaction span {
+  position: relative;
+  top: 1px;
 }
 
 #index {
@@ -257,6 +280,7 @@ audio, video {
 
 #channels a:hover {
   background: #301034;
+  color: #edeced;
 }
 
 #messages {
