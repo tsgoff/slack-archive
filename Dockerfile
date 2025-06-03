@@ -12,4 +12,4 @@ COPY . /slack-archive/
 RUN npm run compile
 
 VOLUME /slack-archive/slack-archive
-ENTRYPOINT ["node", "bin/slack-archive.js"]
+ENTRYPOINT ["node", "--max-old-space-size=12288", "bin/slack-archive.js"]
